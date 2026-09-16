@@ -14,6 +14,17 @@ val localProperties = Properties().apply {
 android {
     namespace = "com.gitberk.routetracker"
 
+    signingConfigs {
+        // Shared debug keystore so every clone builds with the same SHA-1, which the bundled
+        // Maps API key is restricted to. It signs debug builds only and protects nothing.
+        getByName("debug") {
+            storeFile = rootProject.file("keystore/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+    }
+
     defaultConfig {
         applicationId = "com.gitberk.routetracker"
         versionCode = 1
