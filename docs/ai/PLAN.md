@@ -43,6 +43,9 @@ core/testing         fakes shared by unit tests (added during implementation)
 
 ### Location request
 - High accuracy, ~5 s interval, `minUpdateDistanceMeters = 20`.
+- **Decision (after testing on the emulator):** pins appeared up to one interval after the user
+  passed the 100 m point. Changed to a 1 s interval and `minUpdateDistanceMeters = 5`; battery tuning
+  comes later.
 
 ### Single source of truth
 - The service writes markers to Room, and the UI observes Room only. A reopened app shows the stored

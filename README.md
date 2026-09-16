@@ -80,8 +80,10 @@ restarted, or the app process is brand new.
   can place fake markers.
 - **Only precise location is accepted.** Approximate location is kilometers off and would never pass
   the accuracy filter, so tracking would silently record nothing.
-- **Location requests use a 20 m minimum update distance.** It is well below the 100 m spacing, so
-  markers aren't placed late, and the provider can still skip updates when the user doesn't move.
+- **Location updates are requested every second.** A pin can only appear once an update past the
+  100 m mark arrives, so the interval decides how late a pin shows up. A 5 m minimum update distance
+  lets the provider skip updates while the user stands still. The interval is the first thing to
+  tune for battery.
 - **The pin icon is rasterized once.** `LocationPinIcon` caches a single `BitmapDescriptor` that
   every marker shares. It is created lazily because the Maps SDK has to be initialized first.
 - **Addresses are resolved when a pin is tapped** and stored in Room, so each marker is geocoded at
@@ -103,7 +105,7 @@ restarted, or the app process is brand new.
 ## Manual testing on the emulator
 
 [`docs/testing/istanbul-route.gpx`](docs/testing/istanbul-route.gpx) is a 3 km ride from Taksim
-along İstiklal, past Galata Tower and over Galata Bridge to Eminönü. It has one fix every 5 s at
+along İstiklal, past Galata Tower and over Galata Bridge to Eminönü. It has one fix per second at
 bike speed (~5 m/s), so it takes about 10 minutes at 1x.
 
 1. Set a location in the emulator (Extended controls → Location), run the app, and allow precise

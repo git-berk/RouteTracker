@@ -15,11 +15,12 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-private const val UPDATE_INTERVAL_MILLIS = 5_000L
+// A marker can only appear once a fix past the 100 m mark arrives, so the interval is how late a
+// marker can show up. One second keeps that unnoticeable, at a battery cost worth revisiting.
+private const val UPDATE_INTERVAL_MILLIS = 1_000L
 
-// Well below the 100 m marker distance so a marker is never placed late, while still letting
-// the provider skip deliveries when the user stands still.
-private const val MIN_UPDATE_DISTANCE_METERS = 20f
+// Lets the provider skip deliveries while the user stands still.
+private const val MIN_UPDATE_DISTANCE_METERS = 5f
 
 // Callers are expected to check permission first (see hasLocationPermission); a missing
 // permission surfaces as a SecurityException through the flow or the suspend call.
@@ -30,6 +31,7 @@ internal class FusedLocationTracker @Inject constructor(
 
     override fun locationUpdates(): Flow<LocationPoint> = callbackFlow {
         val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, UPDATE_INTERVAL_MILLIS)
+            .setMinUpdateIntervalMillis(UPDATE_INTERVAL_MILLIS)
             .setMinUpdateDistanceMeters(MIN_UPDATE_DISTANCE_METERS)
             .build()
         val callback = object : LocationCallback() {
