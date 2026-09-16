@@ -4,22 +4,34 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.gitberk.routetracker.core.maps.RouteMap
+import com.gitberk.routetracker.core.maps.STREET_ZOOM
+import com.gitberk.routetracker.core.maps.animateTo
+import com.gitberk.routetracker.core.maps.latLng
 import com.gitberk.routetracker.core.maps.showRoute
+import com.gitberk.routetracker.core.model.LocationPoint
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.launch
 
 private val RouteFramePadding = 64.dp
 
@@ -32,6 +44,10 @@ fun RouteScreen(
 
     RouteScreen(
         uiState = uiState,
+        onStartClick = viewModel::startTracking,
+        onStopClick = viewModel::stopTracking,
+        onResetConfirm = viewModel::resetRoute,
+        requestCurrentLocation = viewModel::currentLocation,
         modifier = modifier,
     )
 }
@@ -39,18 +55,37 @@ fun RouteScreen(
 @Composable
 internal fun RouteScreen(
     uiState: RouteUiState,
+    onStartClick: () -> Unit,
+    onStopClick: () -> Unit,
+    onResetConfirm: () -> Unit,
+    requestCurrentLocation: suspend () -> LocationPoint?,
     modifier: Modifier = Modifier,
 ) {
+    val scope = rememberCoroutineScope()
     val cameraPositionState = rememberCameraPositionState()
     var isMapLoaded by remember { mutableStateOf(false) }
     // Saved so a rotation doesn't snap the camera back after the user has panned around.
     var hasFramedRoute by rememberSaveable { mutableStateOf(false) }
+    var showResetDialog by rememberSaveable { mutableStateOf(false) }
     val framePaddingPx = with(LocalDensity.current) { RouteFramePadding.roundToPx() }
 
     LaunchedEffect(isMapLoaded, uiState.isLoading) {
         if (!isMapLoaded || uiState.isLoading || hasFramedRoute) return@LaunchedEffect
-        cameraPositionState.showRoute(uiState.markers, framePaddingPx)
         hasFramedRoute = true
+        if (uiState.markers.isNotEmpty()) {
+            cameraPositionState.showRoute(uiState.markers, framePaddingPx)
+        } else {
+            requestCurrentLocation()?.let { location ->
+                cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(location.latLng, STREET_ZOOM))
+            }
+        }
+    }
+
+    val lastMarker = uiState.markers.lastOrNull()
+    LaunchedEffect(lastMarker?.id) {
+        if (hasFramedRoute && uiState.isTracking && lastMarker != null) {
+            cameraPositionState.animateTo(lastMarker.latLng)
+        }
     }
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -62,6 +97,45 @@ internal fun RouteScreen(
             onMapLoaded = { isMapLoaded = true },
             modifier = Modifier.fillMaxSize(),
             contentPadding = WindowInsets.systemBars.asPaddingValues(),
+        )
+
+        RouteStatusChip(
+            isTracking = uiState.isTracking,
+            markerCount = uiState.markers.size,
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .padding(16.dp),
+        )
+
+        RouteControls(
+            isTracking = uiState.isTracking,
+            canReset = uiState.markers.isNotEmpty(),
+            onStartClick = onStartClick,
+            onStopClick = onStopClick,
+            onResetClick = { showResetDialog = true },
+            onMyLocationClick = {
+                scope.launch {
+                    requestCurrentLocation()?.let { location ->
+                        cameraPositionState.animateTo(location.latLng, STREET_ZOOM)
+                    }
+                }
+            },
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .windowInsetsPadding(WindowInsets.safeDrawing)
+                .padding(16.dp),
+        )
+    }
+
+    if (showResetDialog) {
+        ResetRouteDialog(
+            onConfirm = {
+                showResetDialog = false
+                onResetConfirm()
+            },
+            onDismiss = { showResetDialog = false },
         )
     }
 }

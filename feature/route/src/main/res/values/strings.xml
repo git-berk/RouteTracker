@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="route_start_tracking">Start</string>
+    <string name="route_stop_tracking">Stop</string>
+    <string name="route_reset">Reset</string>
+    <string name="route_show_my_location">Show my location</string>
+
+    <string name="route_status_tracking">Tracking</string>
+    <string name="route_status_idle">Not tracking</string>
+    <string name="route_status_format">%1$s · %2$s</string>
+    <plurals name="route_marker_count">
+        <item quantity="one">%d marker</item>
+        <item quantity="other">%d markers</item>
+    </plurals>
+
+    <string name="route_reset_dialog_title">Reset route?</string>
+    <string name="route_reset_dialog_message">All markers will be deleted. This can\'t be undone.</string>
+    <string name="route_reset_dialog_confirm">Reset</string>
+    <string name="route_dialog_cancel">Cancel</string>
+</resources>
