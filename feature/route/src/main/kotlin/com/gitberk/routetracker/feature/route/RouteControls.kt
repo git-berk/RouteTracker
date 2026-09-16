@@ -138,3 +138,21 @@ internal fun ResetRouteDialog(
         },
     )
 }
+
+@Composable
+internal fun LocationPermissionDialog(
+    onOpenSettings: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text(stringResource(R.string.route_permission_dialog_title)) },
+        text = { Text(stringResource(R.string.route_permission_dialog_message)) },
+        confirmButton = {
+            TextButton(onClick = onOpenSettings) { Text(stringResource(R.string.route_permission_dialog_open_settings)) }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) { Text(stringResource(R.string.route_dialog_cancel)) }
+        },
+    )
+}

@@ -7,6 +7,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.activity.compose)
     implementation(projects.core.data)
     implementation(projects.core.location)
     implementation(projects.core.maps)

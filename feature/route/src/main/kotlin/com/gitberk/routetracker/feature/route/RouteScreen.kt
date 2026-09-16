@@ -1,5 +1,8 @@
 package com.gitberk.routetracker.feature.route
 
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -19,6 +22,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -41,23 +45,41 @@ fun RouteScreen(
     viewModel: RouteViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val permissionGate = rememberPermissionGate()
+    val context = LocalContext.current
 
     RouteScreen(
         uiState = uiState,
-        onStartClick = viewModel::startTracking,
+        hasLocationPermission = permissionGate.hasLocationPermission,
+        onStartClick = { permissionGate.runWithPermissions(TrackingPermissions, viewModel::startTracking) },
         onStopClick = viewModel::stopTracking,
         onResetConfirm = viewModel::resetRoute,
+        onMyLocationClick = { onLocated -> permissionGate.runWithPermissions(LocationPermissions, onLocated) },
         requestCurrentLocation = viewModel::currentLocation,
         modifier = modifier,
     )
+
+    if (permissionGate.showRationale) {
+        LocationPermissionDialog(
+            onOpenSettings = {
+                permissionGate.dismissRationale()
+                context.startActivity(
+                    Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", context.packageName, null)),
+                )
+            },
+            onDismiss = permissionGate::dismissRationale,
+        )
+    }
 }
 
 @Composable
 internal fun RouteScreen(
     uiState: RouteUiState,
+    hasLocationPermission: Boolean,
     onStartClick: () -> Unit,
     onStopClick: () -> Unit,
     onResetConfirm: () -> Unit,
+    onMyLocationClick: (onPermissionGranted: () -> Unit) -> Unit,
     requestCurrentLocation: suspend () -> LocationPoint?,
     modifier: Modifier = Modifier,
 ) {
@@ -92,7 +114,7 @@ internal fun RouteScreen(
         RouteMap(
             markers = uiState.markers,
             cameraPositionState = cameraPositionState,
-            isMyLocationEnabled = false,
+            isMyLocationEnabled = hasLocationPermission,
             onMarkerClick = {},
             onMapLoaded = { isMapLoaded = true },
             modifier = Modifier.fillMaxSize(),
@@ -115,9 +137,11 @@ internal fun RouteScreen(
             onStopClick = onStopClick,
             onResetClick = { showResetDialog = true },
             onMyLocationClick = {
-                scope.launch {
-                    requestCurrentLocation()?.let { location ->
-                        cameraPositionState.animateTo(location.latLng, STREET_ZOOM)
+                onMyLocationClick {
+                    scope.launch {
+                        requestCurrentLocation()?.let { location ->
+                            cameraPositionState.animateTo(location.latLng, STREET_ZOOM)
+                        }
                     }
                 }
             },

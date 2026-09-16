@@ -17,4 +17,8 @@
     <string name="route_reset_dialog_message">All markers will be deleted. This can\'t be undone.</string>
     <string name="route_reset_dialog_confirm">Reset</string>
     <string name="route_dialog_cancel">Cancel</string>
+
+    <string name="route_permission_dialog_title">Precise location needed</string>
+    <string name="route_permission_dialog_message">RouteTracker places a marker every 100 meters, which needs precise location. Allow it in the app settings to start tracking.</string>
+    <string name="route_permission_dialog_open_settings">Open settings</string>
 </resources>
