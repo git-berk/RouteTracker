@@ -16,8 +16,8 @@ and architecture, and `docs/ai/PLAN.md` for the original plan.
 ./gradlew :app:lintDebug
 ```
 
-Use a JDK 17-21. Android Studio's bundled JBR works. A Maps API key goes in `local.properties` as
-`MAPS_API_KEY`.
+Use a JDK 17-21. Android Studio's bundled JBR works. A restricted Maps API key is bundled in `gradle.properties`.
+Don't change the debug signing config, because the key only accepts that keystore's SHA-1.
 
 ## Conventions
 

@@ -17,13 +17,15 @@ tracking in the background, and shows the address of a pin when it is tapped.
 
 ## Setup
 
-1. Get a Google Maps SDK for Android API key.
-2. Add it to `local.properties` (not committed):
-   ```properties
-   MAPS_API_KEY=your_key_here
-   ```
-   `MAPS_API_KEY` as an environment variable also works.
-3. Open the project in Android Studio and run the `app` configuration.
+Open the project in Android Studio and run the `app` configuration. No extra setup is needed.
+
+A Google Maps API key is bundled in `gradle.properties` so the map works right away. It is restricted
+to Maps SDK for Android, the `com.gitberk.routetracker` package and the SHA-1 of the debug keystore
+committed in `keystore/`. That's why debug builds sign with that keystore instead of your own. The
+key is for reviewing this project only.
+
+To use your own key, set `MAPS_API_KEY=...` in `local.properties` or as an environment variable.
+Either one overrides the bundled key.
 
 Requirements: JDK 17+ (Android Studio's bundled JDK works), Android SDK 36, a device or emulator with
 Google Play services. Min SDK is 26.

@@ -30,9 +30,11 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        // Kept out of version control: set MAPS_API_KEY in local.properties or the environment.
-        manifestPlaceholders["MAPS_API_KEY"] =
-            localProperties.getProperty("MAPS_API_KEY") ?: System.getenv("MAPS_API_KEY").orEmpty()
+        // local.properties and the environment take precedence so anyone can use their own key
+        // instead of the restricted one bundled in gradle.properties.
+        manifestPlaceholders["MAPS_API_KEY"] = localProperties.getProperty("MAPS_API_KEY")
+            ?: System.getenv("MAPS_API_KEY")
+            ?: providers.gradleProperty("MAPS_API_KEY").orNull.orEmpty()
     }
 }
 
