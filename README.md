@@ -94,6 +94,27 @@ restarted, or the app process is brand new.
   optimization. Both need extra permissions. Force stop and aggressive battery killers on some
   devices will still end tracking.
 
+## Manual testing on the emulator
+
+[`docs/testing/istanbul-route.gpx`](docs/testing/istanbul-route.gpx) is a 3 km ride from Taksim
+along İstiklal, past Galata Tower and over Galata Bridge to Eminönü. It has one fix every 5 s at
+bike speed (~5 m/s), so it takes about 10 minutes at 1x.
+
+1. Run the app and tap **Start**. Allow precise location and notifications.
+2. Open the emulator's **Extended controls (⋯) → Location → Routes**, choose **Import GPX/KML**,
+   pick the file, and press **Play route**.
+3. While it plays:
+   - Pins appear along the route, connected by a line, and the camera follows the newest one.
+   - Press Home: the notification keeps counting markers, so tracking continues in the background.
+   - Tap a pin to see its address.
+4. Kill the app from recents or with `adb shell am force-stop com.gitberk.routetracker`, then reopen
+   it. The route is still there and tracking resumes.
+5. Tap **Stop**, then **Reset**, and confirm. The route is cleared.
+
+Spacing between pins depends on playback speed. A pin is placed on the first fix that is at least
+100 m from the previous pin, so higher playback speeds put more distance between fixes and pins land
+further apart.
+
 ## Tests
 
 ```bash
