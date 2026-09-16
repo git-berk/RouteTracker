@@ -12,4 +12,6 @@ dependencies {
     implementation(projects.core.location)
     implementation(projects.core.maps)
     implementation(projects.core.tracking)
+
+    testImplementation(projects.core.testing)
 }
