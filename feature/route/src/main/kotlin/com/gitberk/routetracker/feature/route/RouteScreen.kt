@@ -5,6 +5,7 @@ import android.net.Uri
 import android.provider.Settings
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -39,6 +40,9 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
 
 private val RouteFramePadding = 64.dp
+
+// Reserves the strip under the bottom controls so the Google logo and framed route stay visible.
+private val ControlsHeight = 88.dp
 
 @Composable
 fun RouteScreen(
@@ -125,7 +129,9 @@ internal fun RouteScreen(
             onMarkerClick = onMarkerClick,
             onMapLoaded = { isMapLoaded = true },
             modifier = Modifier.fillMaxSize(),
-            contentPadding = WindowInsets.systemBars.asPaddingValues(),
+            contentPadding = WindowInsets.systemBars
+                .add(WindowInsets(bottom = ControlsHeight))
+                .asPaddingValues(),
         )
 
         RouteStatusChip(
