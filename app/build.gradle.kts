@@ -1,0 +1,35 @@
+import java.util.Properties
+
+plugins {
+    id("routetracker.android.application")
+    id("routetracker.android.application.compose")
+    id("routetracker.hilt")
+}
+
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) file.inputStream().use(::load)
+}
+
+android {
+    namespace = "com.gitberk.routetracker"
+
+    defaultConfig {
+        applicationId = "com.gitberk.routetracker"
+        versionCode = 1
+        versionName = "1.0"
+
+        // Kept out of version control: set MAPS_API_KEY in local.properties or the environment.
+        manifestPlaceholders["MAPS_API_KEY"] =
+            localProperties.getProperty("MAPS_API_KEY") ?: System.getenv("MAPS_API_KEY").orEmpty()
+    }
+}
+
+dependencies {
+    implementation(projects.core.designsystem)
+    implementation(projects.core.tracking)
+    implementation(projects.feature.route)
+
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.core.ktx)
+}

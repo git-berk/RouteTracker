@@ -24,6 +24,7 @@ dependencyResolutionManagement {
 rootProject.name = "RouteTracker"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
+include(":app")
 include(":core:model")
 include(":core:common")
 include(":core:database")
@@ -35,3 +36,4 @@ include(":core:testing")
 include(":core:designsystem")
 include(":core:maps")
 include(":core:tracking")
+include(":feature:route")
