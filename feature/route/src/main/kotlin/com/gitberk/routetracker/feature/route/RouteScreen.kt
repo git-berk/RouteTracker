@@ -41,6 +41,9 @@ import kotlinx.coroutines.launch
 
 private val RouteFramePadding = 64.dp
 
+// Below this the map shows countries rather than streets, so following a marker also zooms in.
+private const val FOLLOW_MIN_ZOOM = 12f
+
 // Reserves the strip under the bottom controls so the Google logo and framed route stay visible.
 private val ControlsHeight = 88.dp
 
@@ -52,6 +55,16 @@ fun RouteScreen(
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val permissionGate = rememberPermissionGate()
     val context = LocalContext.current
+
+    // Asked once per session up front so the map can open on the user's position. Tracking
+    // still only starts from the Start button. After repeated denials Android stops showing the dialog.
+    var hasRequestedPermissions by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        if (!hasRequestedPermissions) {
+            hasRequestedPermissions = true
+            permissionGate.requestMissing(TrackingPermissions)
+        }
+    }
 
     RouteScreen(
         uiState = uiState,
@@ -98,26 +111,29 @@ internal fun RouteScreen(
     val cameraPositionState = rememberCameraPositionState()
     var isMapLoaded by remember { mutableStateOf(false) }
     // Saved so a rotation doesn't snap the camera back after the user has panned around.
-    var hasFramedRoute by rememberSaveable { mutableStateOf(false) }
+    var hasPositionedCamera by rememberSaveable { mutableStateOf(false) }
     var showResetDialog by rememberSaveable { mutableStateOf(false) }
     val framePaddingPx = with(LocalDensity.current) { RouteFramePadding.roundToPx() }
 
-    LaunchedEffect(isMapLoaded, uiState.isLoading) {
-        if (!isMapLoaded || uiState.isLoading || hasFramedRoute) return@LaunchedEffect
-        hasFramedRoute = true
+    // Re-runs when permission is granted, so the first-launch prompt ends on the user's position.
+    LaunchedEffect(isMapLoaded, uiState.isLoading, hasLocationPermission) {
+        if (!isMapLoaded || uiState.isLoading || hasPositionedCamera) return@LaunchedEffect
         if (uiState.markers.isNotEmpty()) {
             cameraPositionState.showRoute(uiState.markers, framePaddingPx)
-        } else {
+            hasPositionedCamera = true
+        } else if (hasLocationPermission) {
             requestCurrentLocation()?.let { location ->
                 cameraPositionState.move(CameraUpdateFactory.newLatLngZoom(location.latLng, STREET_ZOOM))
+                hasPositionedCamera = true
             }
         }
     }
 
     val lastMarker = uiState.markers.lastOrNull()
     LaunchedEffect(lastMarker?.id) {
-        if (hasFramedRoute && uiState.isTracking && lastMarker != null) {
-            cameraPositionState.animateTo(lastMarker.latLng)
+        if (hasPositionedCamera && uiState.isTracking && lastMarker != null) {
+            val zoom = if (cameraPositionState.position.zoom < FOLLOW_MIN_ZOOM) STREET_ZOOM else null
+            cameraPositionState.animateTo(lastMarker.latLng, zoom)
         }
     }
 

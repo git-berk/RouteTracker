@@ -11,7 +11,8 @@ tracking in the background, and shows the address of a pin when it is tapped.
   with an ongoing notification that shows the marker count and has a Stop action.
 - **Address on tap.** Tapping a pin opens a bottom sheet with its address, coordinates and time.
   The address is geocoded on first tap and cached in the database.
-- **Start / stop / reset.** Buttons over the map control tracking. Reset asks for confirmation.
+- **Start / stop / reset.** On first launch the app asks for location and opens zoomed in on the
+  user. Tracking starts only when the user taps Start. Reset asks for confirmation.
 - **Persistent route.** Markers live in Room and are shown again on relaunch until the route is reset.
 - **Route line.** A polyline connects the pins in the order they were recorded.
 
@@ -102,7 +103,8 @@ restarted, or the app process is brand new.
 along İstiklal, past Galata Tower and over Galata Bridge to Eminönü. It has one fix every 5 s at
 bike speed (~5 m/s), so it takes about 10 minutes at 1x.
 
-1. Run the app and tap **Start**. Allow precise location and notifications.
+1. Set a location in the emulator (Extended controls → Location), run the app, and allow precise
+   location and notifications. The map zooms in to that location. Tap **Start**.
 2. Open the emulator's **Extended controls (⋯) → Location → Routes**, choose **Import GPX/KML**,
    pick the file, and press **Play route**.
 3. While it plays:

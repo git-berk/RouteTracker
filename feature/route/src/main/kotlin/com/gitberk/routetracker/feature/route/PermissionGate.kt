@@ -49,15 +49,19 @@ internal class PermissionGate(private val context: Context) {
     private var pendingAction: (() -> Unit)? = null
 
     fun runWithPermissions(permissions: Array<String>, action: () -> Unit) {
-        val missing = permissions.filter { permission ->
-            ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED
-        }
+        val missing = missingPermissions(permissions)
         if (missing.isEmpty()) {
             action()
             return
         }
         pendingAction = action
-        launcher?.launch(missing.toTypedArray())
+        launcher?.launch(missing)
+    }
+
+    /** Asks for missing permissions without a follow-up action, so a denial doesn't show the rationale. */
+    fun requestMissing(permissions: Array<String>) {
+        val missing = missingPermissions(permissions)
+        if (missing.isNotEmpty()) launcher?.launch(missing)
     }
 
     fun dismissRationale() {
@@ -66,14 +70,19 @@ internal class PermissionGate(private val context: Context) {
 
     internal fun onPermissionResult() {
         refresh()
-        val action = pendingAction
+        val action = pendingAction ?: return
         pendingAction = null
-        if (hasLocationPermission) action?.invoke() else showRationale = true
+        if (hasLocationPermission) action() else showRationale = true
     }
 
     internal fun refresh() {
         hasLocationPermission = context.hasLocationPermission()
     }
+
+    private fun missingPermissions(permissions: Array<String>): Array<String> =
+        permissions.filter { permission ->
+            ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED
+        }.toTypedArray()
 }
 
 @Composable
