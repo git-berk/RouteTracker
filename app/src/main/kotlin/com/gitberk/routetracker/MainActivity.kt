@@ -14,7 +14,6 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     @Inject lateinit var trackingController: TrackingController
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,8 +28,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onStart() {
         super.onStart()
-        // The system may have killed the service while tracking was on. Android only allows starting a
-        // location foreground service while the app is visible, so this is the moment to bring it back.
+        // Android only allows starting a location foreground service while the app is visible.
         lifecycleScope.launch { trackingController.resumeIfNeeded() }
     }
 }

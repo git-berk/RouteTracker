@@ -35,7 +35,6 @@ internal class TrackingNotifier @Inject constructor(
     }
 
     fun update(notificationId: Int, markerCount: Int) {
-        // Without the permission the foreground notification is hidden anyway; tracking keeps working.
         if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
             PackageManager.PERMISSION_GRANTED
         ) {
@@ -45,7 +44,6 @@ internal class TrackingNotifier @Inject constructor(
     }
 
     private fun openAppIntent(): PendingIntent? {
-        // This module can't reference MainActivity, so it opens whatever the launcher would open.
         val launchIntent = context.packageManager.getLaunchIntentForPackage(context.packageName) ?: return null
         return PendingIntent.getActivity(context, 0, launchIntent, PendingIntent.FLAG_IMMUTABLE)
     }
@@ -61,7 +59,6 @@ internal class TrackingNotifier @Inject constructor(
         val channel = NotificationChannel(
             CHANNEL_ID,
             context.getString(R.string.tracking_channel_name),
-            // Low importance keeps the ongoing notification silent.
             NotificationManager.IMPORTANCE_LOW,
         ).apply {
             description = context.getString(R.string.tracking_channel_description)

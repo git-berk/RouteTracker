@@ -41,10 +41,8 @@ import kotlinx.coroutines.launch
 
 private val RouteFramePadding = 64.dp
 
-// Below this the map shows countries rather than streets, so following a marker also zooms in.
 private const val FOLLOW_MIN_ZOOM = 12f
 
-// Reserves the strip under the bottom controls so the Google logo and framed route stay visible.
 private val ControlsHeight = 88.dp
 
 @Composable
@@ -56,8 +54,6 @@ fun RouteScreen(
     val permissionGate = rememberPermissionGate()
     val context = LocalContext.current
 
-    // Asked once per session up front so the map can open on the user's position. Tracking
-    // still only starts from the Start button. After repeated denials Android stops showing the dialog.
     var hasRequestedPermissions by rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         if (!hasRequestedPermissions) {
@@ -110,12 +106,10 @@ internal fun RouteScreen(
     val scope = rememberCoroutineScope()
     val cameraPositionState = rememberCameraPositionState()
     var isMapLoaded by remember { mutableStateOf(false) }
-    // Saved so a rotation doesn't snap the camera back after the user has panned around.
     var hasPositionedCamera by rememberSaveable { mutableStateOf(false) }
     var showResetDialog by rememberSaveable { mutableStateOf(false) }
     val framePaddingPx = with(LocalDensity.current) { RouteFramePadding.roundToPx() }
 
-    // Re-runs when permission is granted, so the first-launch prompt ends on the user's position.
     LaunchedEffect(isMapLoaded, uiState.isLoading, hasLocationPermission) {
         if (!isMapLoaded || uiState.isLoading || hasPositionedCamera) return@LaunchedEffect
         if (uiState.markers.isNotEmpty()) {

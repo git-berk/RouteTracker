@@ -8,10 +8,6 @@ import kotlin.math.sqrt
 
 private const val EARTH_RADIUS_METERS = 6_371_008.8
 
-/**
- * Great-circle distance using the haversine formula. Kept free of android.location.Location
- * so the marker rule can be unit tested on the JVM.
- */
 fun distanceInMeters(
     fromLatitude: Double,
     fromLongitude: Double,

@@ -8,13 +8,11 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-// Roughly 1 m of latitude (and of longitude at the equator), so offsets below read as meters.
 private const val DEGREES_PER_METER = 1.0 / 111_195
 
 private const val TOLERANCE_METERS = 0.01
 
 class RecordLocationUseCaseTest {
-
     private val repository = FakeRouteRepository()
     private val recordLocation = RecordLocationUseCase(repository)
 
@@ -62,7 +60,6 @@ class RecordLocationUseCaseTest {
     fun turningPath_keepsMarkersOneHundredMetersApart() = runTest {
         recordLocation(fix(north = 0.0))
         recordLocation(fix(north = 80.0))
-        // Markers land at (80 N, 60 E) and (80 N, 160 E): 100 m straight-line from the previous one.
         recordLocation(fix(north = 80.0, east = 250.0))
 
         val markers = repository.currentMarkers

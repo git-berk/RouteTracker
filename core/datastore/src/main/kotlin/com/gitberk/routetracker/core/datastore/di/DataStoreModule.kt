@@ -20,8 +20,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DataStoreModule {
-
-    // DataStore allows only one active instance per file; a second one throws on first access.
     @Provides
     @Singleton
     fun providesPreferencesDataStore(

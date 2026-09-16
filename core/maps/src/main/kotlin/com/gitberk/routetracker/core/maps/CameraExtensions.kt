@@ -13,7 +13,7 @@ val RouteMarker.latLng: LatLng get() = LatLng(latitude, longitude)
 
 val LocationPoint.latLng: LatLng get() = LatLng(latitude, longitude)
 
-/** Frames the whole route. Must be called after the map is laid out, as bounds need the map size. */
+// Call only after the map is laid out; bounds updates need the map size.
 fun CameraPositionState.showRoute(markers: List<RouteMarker>, paddingPx: Int) {
     when (markers.size) {
         0 -> Unit

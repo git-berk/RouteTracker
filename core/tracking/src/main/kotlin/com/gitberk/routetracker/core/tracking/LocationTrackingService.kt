@@ -29,13 +29,8 @@ private const val TAG = "LocationTrackingService"
 private const val NOTIFICATION_ID = 1
 private const val ACTION_STOP = "com.gitberk.routetracker.action.STOP_TRACKING"
 
-/**
- * Keeps receiving location updates while the app is in the background or removed from recents.
- * It only records markers; the UI observes them from the database, so the two never talk directly.
- */
 @AndroidEntryPoint
 class LocationTrackingService : Service() {
-
     @Inject internal lateinit var locationTracker: LocationTracker
 
     @Inject internal lateinit var recordLocation: RecordLocationUseCase
@@ -62,7 +57,6 @@ class LocationTrackingService : Service() {
             return START_NOT_STICKY
         }
 
-        // Start requests can repeat (app reopened, sticky restart); only one collection should run.
         if (trackingJob == null) {
             trackingJob = serviceScope.launch {
                 launch { observeMarkerCount() }
@@ -104,10 +98,7 @@ class LocationTrackingService : Service() {
         }
     }
 
-    /**
-     * A sticky restart can happen while the app is in the background, where Android refuses
-     * location foreground services. Tracking stays flagged on so it resumes when the app is opened.
-     */
+    // Android refuses location foreground services started from the background, e.g. on a sticky restart.
     private fun startInForeground(): Boolean = try {
         ServiceCompat.startForeground(
             this,

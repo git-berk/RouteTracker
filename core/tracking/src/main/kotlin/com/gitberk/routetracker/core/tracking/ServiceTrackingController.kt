@@ -12,7 +12,6 @@ internal class ServiceTrackingController @Inject constructor(
     @ApplicationContext private val context: Context,
     private val trackingStateRepository: TrackingStateRepository,
 ) : TrackingController {
-
     override suspend fun start() {
         trackingStateRepository.setTracking(true)
         startService()
@@ -29,7 +28,6 @@ internal class ServiceTrackingController @Inject constructor(
         if (context.hasLocationPermission()) {
             startService()
         } else {
-            // Permission was revoked from settings while tracking was on.
             trackingStateRepository.setTracking(false)
         }
     }

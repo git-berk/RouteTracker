@@ -28,7 +28,6 @@ class RouteViewModel @Inject constructor(
     private val trackingController: TrackingController,
     private val locationTracker: LocationTracker,
 ) : ViewModel() {
-
     private val selectedMarkerId = MutableStateFlow<Long?>(null)
     private val addressState = MutableStateFlow<AddressState>(AddressState.Loading)
     private var addressJob: Job? = null
@@ -44,7 +43,6 @@ class RouteViewModel @Inject constructor(
             isLoading = false,
             markers = markers,
             isTracking = isTracking,
-            // Looked up from the list so the sheet closes by itself when the route is reset.
             selectedMarker = markers.getOrNull(selectedIndex)?.let { marker ->
                 SelectedMarker(marker = marker, number = selectedIndex + 1, address = address)
             },
@@ -63,7 +61,6 @@ class RouteViewModel @Inject constructor(
         viewModelScope.launch { trackingController.stop() }
     }
 
-    /** Tracking keeps running if it was on; the next accurate fix becomes the new starting marker. */
     fun resetRoute() {
         viewModelScope.launch { routeRepository.clearRoute() }
     }

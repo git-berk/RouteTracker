@@ -22,7 +22,6 @@ import org.junit.Test
 import java.io.IOException
 
 class RouteViewModelTest {
-
     @get:Rule
     val mainDispatcherRule = MainDispatcherRule()
 
@@ -32,7 +31,6 @@ class RouteViewModelTest {
 
     private lateinit var viewModel: RouteViewModel
 
-    // Created after the rule has replaced Dispatchers.Main, which viewModelScope relies on.
     @Before
     fun setUp() {
         viewModel = RouteViewModel(
@@ -118,7 +116,6 @@ class RouteViewModelTest {
         assertNull(viewModel.uiState.value.selectedMarker)
     }
 
-    // uiState only updates while collected (WhileSubscribed), as it would be by the screen.
     private fun TestScope.collectUiState() {
         backgroundScope.launch(UnconfinedTestDispatcher(testScheduler)) { viewModel.uiState.collect() }
     }

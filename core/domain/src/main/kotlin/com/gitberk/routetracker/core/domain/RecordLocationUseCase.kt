@@ -8,30 +8,20 @@ import javax.inject.Inject
 
 const val MARKER_DISTANCE_METERS = 100.0
 
-// A fix this imprecise can be further off than the marker spacing itself, which would
-// drop fake markers while the user is standing still.
 const val MAX_ACCEPTED_ACCURACY_METERS = 50f
 
-// Binary search steps for the crossing point; 30 halvings of a segment of a few hundred meters
-// lands well under a millimeter.
 private const val SEARCH_ITERATIONS = 30
 
 /**
- * Places a marker every [MARKER_DISTANCE_METERS] along the user's path.
- *
- * Fixes arrive every few seconds, so the user is usually already past the 100 m mark when one
- * comes in. Instead of dropping the marker at that fix, it is placed where the segment from the
- * previous fix to the new one is exactly 100 m from the last marker. A long segment can hold
- * several markers. This keeps the spacing exact regardless of speed or update interval.
- *
- * Holds the previous fix in memory, so one instance should serve one tracking session.
+ * Places markers exactly [MARKER_DISTANCE_METERS] apart: when a fix passes the mark, the marker goes
+ * where the segment from the previous fix crosses it, so spacing doesn't depend on the update rate.
+ * Keeps the previous fix in memory, so use one instance per tracking session.
  */
 class RecordLocationUseCase @Inject constructor(
     private val routeRepository: RouteRepository,
 ) {
     private var previousFix: LocationPoint? = null
 
-    /** Returns the number of markers added. */
     suspend operator fun invoke(fix: LocationPoint): Int {
         if (fix.accuracyMeters > MAX_ACCEPTED_ACCURACY_METERS) return 0
 
@@ -43,8 +33,6 @@ class RecordLocationUseCase @Inject constructor(
         }
 
         var anchor = lastMarker.asLocationPoint()
-        // Without a usable previous fix (new session, or the route was just reset), the segment
-        // starts at the last marker itself.
         var segmentStart = previousFix
             ?.takeIf { it.distanceTo(anchor) < MARKER_DISTANCE_METERS }
             ?: anchor
@@ -61,11 +49,6 @@ class RecordLocationUseCase @Inject constructor(
         return added
     }
 
-    /**
-     * Finds the point between [start] and [end] that is [distance] meters from [anchor], given that
-     * [start] is closer than that and [end] is at least that far. Coordinates are interpolated
-     * linearly, which is accurate at the scale of a few hundred meters.
-     */
     private fun pointAtDistanceFrom(
         anchor: LocationPoint,
         start: LocationPoint,

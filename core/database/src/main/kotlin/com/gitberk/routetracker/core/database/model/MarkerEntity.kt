@@ -11,7 +11,6 @@ data class MarkerEntity(
     val latitude: Double,
     val longitude: Double,
     val recordedAtMillis: Long,
-    // Filled lazily the first time the marker is opened, so geocoding happens at most once per marker.
     val address: String? = null,
 )
 

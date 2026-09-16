@@ -9,10 +9,6 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-/**
- * Persists whether the user wants tracking on. The service can be killed at any time, so this flag,
- * not the running service, is what decides whether tracking resumes when the app is opened again.
- */
 class TrackingPreferencesDataSource @Inject constructor(
     private val dataStore: DataStore<Preferences>,
 ) {

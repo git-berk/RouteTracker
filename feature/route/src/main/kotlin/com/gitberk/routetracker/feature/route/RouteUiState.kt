@@ -11,7 +11,6 @@ data class RouteUiState(
 
 data class SelectedMarker(
     val marker: RouteMarker,
-    /** 1-based position along the route. */
     val number: Int,
     val address: AddressState,
 )

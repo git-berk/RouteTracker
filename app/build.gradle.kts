@@ -15,8 +15,7 @@ android {
     namespace = "com.gitberk.routetracker"
 
     signingConfigs {
-        // Shared debug keystore so every clone builds with the same SHA-1, which the bundled
-        // Maps API key is restricted to. It signs debug builds only and protects nothing.
+        // Committed keystore: the bundled Maps API key only accepts this certificate's SHA-1.
         getByName("debug") {
             storeFile = rootProject.file("keystore/debug.keystore")
             storePassword = "android"
@@ -30,8 +29,6 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        // local.properties and the environment take precedence so anyone can use their own key
-        // instead of the restricted one bundled in gradle.properties.
         manifestPlaceholders["MAPS_API_KEY"] = localProperties.getProperty("MAPS_API_KEY")
             ?: System.getenv("MAPS_API_KEY")
             ?: providers.gradleProperty("MAPS_API_KEY").orNull.orEmpty()

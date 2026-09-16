@@ -24,20 +24,14 @@ internal val LocationPermissions = arrayOf(
     Manifest.permission.ACCESS_COARSE_LOCATION,
 )
 
-/** Notifications are asked together with location so the tracking notification is visible from the start. */
 internal val TrackingPermissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
     LocationPermissions + Manifest.permission.POST_NOTIFICATIONS
 } else {
     LocationPermissions
 }
 
-/**
- * Runs an action once precise location is granted, asking for any missing permissions first.
- * A denied notification permission doesn't block the action; tracking works without it.
- */
 @Stable
 internal class PermissionGate(private val context: Context) {
-
     var hasLocationPermission by mutableStateOf(context.hasLocationPermission())
         private set
 
@@ -58,7 +52,6 @@ internal class PermissionGate(private val context: Context) {
         launcher?.launch(missing)
     }
 
-    /** Asks for missing permissions without a follow-up action, so a denial doesn't show the rationale. */
     fun requestMissing(permissions: Array<String>) {
         val missing = missingPermissions(permissions)
         if (missing.isNotEmpty()) launcher?.launch(missing)
@@ -93,7 +86,6 @@ internal fun rememberPermissionGate(): PermissionGate {
         gate.onPermissionResult()
     }
     SideEffect { gate.launcher = launcher }
-    // The user may grant or revoke permissions from system settings while the app is in the background.
     LifecycleResumeEffect(gate) {
         gate.refresh()
         onPauseOrDispose {}

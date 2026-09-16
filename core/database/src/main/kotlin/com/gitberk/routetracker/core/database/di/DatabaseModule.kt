@@ -14,9 +14,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
-
-    // Shared so the service's inserts reach the screen's Flow: Room only notifies observers
-    // registered on the same database instance.
     @Provides
     @Singleton
     fun providesRouteDatabase(@ApplicationContext context: Context): RouteDatabase =

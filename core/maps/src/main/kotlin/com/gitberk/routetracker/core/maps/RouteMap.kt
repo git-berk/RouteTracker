@@ -63,7 +63,6 @@ fun RouteMap(
                     anchor = LocationPinIcon.anchor,
                     onClick = {
                         onMarkerClick(marker)
-                        // Consume the click so the default info window and camera jump don't fight the address sheet.
                         true
                     },
                 )

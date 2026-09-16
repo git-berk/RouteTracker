@@ -13,7 +13,6 @@ class AndroidRoomConventionPlugin : Plugin<Project> {
             pluginManager.apply("com.google.devtools.ksp")
 
             extensions.configure<RoomExtension> {
-                // Committed schemas let future migrations be verified against the shipped version.
                 schemaDirectory("$projectDir/schemas")
             }
 
