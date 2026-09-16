@@ -18,6 +18,12 @@
     <string name="route_reset_dialog_confirm">Reset</string>
     <string name="route_dialog_cancel">Cancel</string>
 
+    <string name="route_marker_title">Marker %d</string>
+    <string name="route_address_loading">Looking up address…</string>
+    <string name="route_address_not_found">No address found for this location</string>
+    <string name="route_address_failed">Couldn\'t load the address</string>
+    <string name="route_address_retry">Retry</string>
+
     <string name="route_permission_dialog_title">Precise location needed</string>
     <string name="route_permission_dialog_message">RouteTracker places a marker every 100 meters, which needs precise location. Allow it in the app settings to start tracking.</string>
     <string name="route_permission_dialog_open_settings">Open settings</string>

@@ -33,6 +33,7 @@ import com.gitberk.routetracker.core.maps.animateTo
 import com.gitberk.routetracker.core.maps.latLng
 import com.gitberk.routetracker.core.maps.showRoute
 import com.gitberk.routetracker.core.model.LocationPoint
+import com.gitberk.routetracker.core.model.RouteMarker
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.maps.android.compose.rememberCameraPositionState
 import kotlinx.coroutines.launch
@@ -54,6 +55,9 @@ fun RouteScreen(
         onStartClick = { permissionGate.runWithPermissions(TrackingPermissions, viewModel::startTracking) },
         onStopClick = viewModel::stopTracking,
         onResetConfirm = viewModel::resetRoute,
+        onMarkerClick = viewModel::selectMarker,
+        onRetryAddress = viewModel::retryAddress,
+        onDismissMarker = viewModel::dismissMarker,
         onMyLocationClick = { onLocated -> permissionGate.runWithPermissions(LocationPermissions, onLocated) },
         requestCurrentLocation = viewModel::currentLocation,
         modifier = modifier,
@@ -79,6 +83,9 @@ internal fun RouteScreen(
     onStartClick: () -> Unit,
     onStopClick: () -> Unit,
     onResetConfirm: () -> Unit,
+    onMarkerClick: (RouteMarker) -> Unit,
+    onRetryAddress: () -> Unit,
+    onDismissMarker: () -> Unit,
     onMyLocationClick: (onPermissionGranted: () -> Unit) -> Unit,
     requestCurrentLocation: suspend () -> LocationPoint?,
     modifier: Modifier = Modifier,
@@ -115,7 +122,7 @@ internal fun RouteScreen(
             markers = uiState.markers,
             cameraPositionState = cameraPositionState,
             isMyLocationEnabled = hasLocationPermission,
-            onMarkerClick = {},
+            onMarkerClick = onMarkerClick,
             onMapLoaded = { isMapLoaded = true },
             modifier = Modifier.fillMaxSize(),
             contentPadding = WindowInsets.systemBars.asPaddingValues(),
@@ -150,6 +157,14 @@ internal fun RouteScreen(
                 .fillMaxWidth()
                 .windowInsetsPadding(WindowInsets.safeDrawing)
                 .padding(16.dp),
+        )
+    }
+
+    uiState.selectedMarker?.let { selectedMarker ->
+        MarkerDetailsSheet(
+            selectedMarker = selectedMarker,
+            onRetryAddress = onRetryAddress,
+            onDismiss = onDismissMarker,
         )
     }
 
