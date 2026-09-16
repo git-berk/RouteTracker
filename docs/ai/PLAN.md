@@ -35,6 +35,9 @@ core/testing         fakes shared by unit tests (added during implementation)
 
 ### 100 m rule (`RecordLocationUseCase`)
 - Compare each fix with the **last stored marker**, not the previous fix.
+- **Decision (after testing on the emulator):** pins landed 125–190 m apart at speed, because a fix
+  only arrives every 5 s. Pins are now placed at the exact 100 m point on the line between the
+  previous fix and the new one, and a long gap gets several pins.
 - Ignore fixes with accuracy worse than 50 m.
 - The first accurate fix on an empty route becomes the start marker.
 

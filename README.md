@@ -5,8 +5,8 @@ tracking in the background, and shows the address of a pin when it is tapped.
 
 ## Features
 
-- **100 m markers.** Each accurate location fix is compared with the last saved marker. When the
-  user has moved 100 m or more, a new pin is added. The first accurate fix becomes the start pin.
+- **100 m markers.** Pins are placed exactly 100 m apart, measured in a straight line from the
+  previous pin. The first accurate fix becomes the start pin.
 - **Background tracking.** Tracking runs in a foreground service (`foregroundServiceType="location"`)
   with an ongoing notification that shows the marker count and has a Stop action.
 - **Address on tap.** Tapping a pin opens a bottom sheet with its address, coordinates and time.
@@ -71,8 +71,11 @@ restarted, or the app process is brand new.
 
 ### Notable decisions
 
-- **Distance is measured from the last marker, not the previous fix.** When the user moves slowly,
-  small steps still add up to a marker.
+- **Markers are placed at the exact 100 m point.** Fixes arrive every few seconds, so the user is
+  usually already past 100 m when one comes in. The pin goes where the line between the previous fix
+  and the new one is exactly 100 m from the last pin, and a long gap gets several pins. The spacing
+  stays exact at any speed or update interval. On a sharp turn a pin can sit slightly off the road,
+  because it lies on the straight line between two fixes.
 - **Fixes with accuracy worse than 50 m are ignored.** Otherwise GPS jitter while standing still
   can place fake markers.
 - **Only precise location is accepted.** Approximate location is kilometers off and would never pass
@@ -115,9 +118,8 @@ bike speed (~5 m/s), so it takes about 10 minutes at 1x.
    it. The route is still there and tracking resumes.
 5. Tap **Stop**, then **Reset**, and confirm. The route is cleared.
 
-Spacing between pins depends on playback speed. A pin is placed on the first fix that is at least
-100 m from the previous pin, so higher playback speeds put more distance between fixes and pins land
-further apart.
+Pins stay 100 m apart at any playback speed, because each one is placed at the exact 100 m point
+between two fixes.
 
 ## Tests
 
@@ -126,8 +128,8 @@ further apart.
 ```
 
 - `DistanceTest`: haversine distances.
-- `RecordLocationUseCaseTest`: start marker, the 100 m threshold, measuring from the last marker,
-  the accuracy filter.
+- `RecordLocationUseCaseTest`: start marker, exact 100 m placement, several pins from one long gap,
+  turning paths, interpolated times, the accuracy filter, reset.
 - `RouteViewModelTest`: UI state, start/stop, address loading/not found/failure and retry, reset.
 
 ## AI usage
