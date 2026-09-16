@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="tracking_channel_name">Route tracking</string>
+    <string name="tracking_channel_description">Shown while your route is being recorded</string>
+    <string name="tracking_notification_title">Recording your route</string>
+</resources>
