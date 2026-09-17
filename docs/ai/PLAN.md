@@ -63,6 +63,8 @@ core/testing         fakes shared by unit tests (added during implementation)
 - **Decision:** use a location pin (Material `location_on`) for every marker, including the start.
 - One `BitmapDescriptor` is created lazily and cached process-wide, then shared by all markers.
 - **Decision:** draw a polyline connecting the markers.
+- **Decision (later):** polyline removed. It drew a straight line across gaps between tracking
+  sessions, and it was not part of the brief.
 - The camera frames the whole route on first load and follows new markers while tracking.
 
 ## Address on marker tap

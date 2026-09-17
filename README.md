@@ -14,7 +14,6 @@ tracking in the background, and shows the address of a pin when it is tapped.
 - **Start / stop / reset.** On first launch the app asks for location and opens zoomed in on the
   user. Tracking starts only when the user taps Start. Reset asks for confirmation.
 - **Persistent route.** Markers live in Room and are shown again on relaunch until the route is reset.
-- **Route line.** A polyline connects the pins in the order they were recorded.
 
 ## Setup
 
@@ -113,7 +112,7 @@ bike speed (~5 m/s), so it takes about 10 minutes at 1x.
 2. Open the emulator's **Extended controls (⋯) → Location → Routes**, choose **Import GPX/KML**,
    pick the file, and press **Play route**.
 3. While it plays:
-   - Pins appear along the route, connected by a line, and the camera follows the newest one.
+   - Pins appear along the route and the camera follows the newest one.
    - Press Home: the notification keeps counting markers, so tracking continues in the background.
    - Tap a pin to see its address.
 4. Kill the app from recents or with `adb shell am force-stop com.gitberk.routetracker`, then reopen
