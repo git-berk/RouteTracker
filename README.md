@@ -19,12 +19,9 @@ tracking in the background, and shows the address of a pin when it is tapped.
 
 Open the project in Android Studio and run the `app` configuration. No extra setup is needed.
 
-A Google Maps API key is bundled in `gradle.properties` so the map works right away. It is restricted
-to Maps SDK for Android, the `com.gitberk.routetracker` package and the SHA-1 of the debug keystore
-committed in `keystore/`. That's why debug builds sign with that keystore instead of your own. The
-key is for reviewing this project only.
-
-To use your own key, replace `MAPS_API_KEY` in `gradle.properties`.
+The Google Maps API key is already included in `gradle.properties`, so the map works right away.
+Debug builds are signed with the keystore committed in `keystore/`, because the key only works for
+this app signed with that keystore. Keep both as they are.
 
 Requirements: JDK 17+ (Android Studio's bundled JDK works), Android SDK 36, a device or emulator with
 Google Play services. Min SDK is 26.
