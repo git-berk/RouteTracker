@@ -25,18 +25,22 @@ class RecordLocationUseCase @Inject constructor(
     suspend operator fun invoke(fix: LocationPoint): Int {
         if (fix.accuracyMeters > MAX_ACCEPTED_ACCURACY_METERS) return 0
 
-        val lastMarker = routeRepository.getLastMarker()
+        val lastMarker = routeRepository.getLastMarker()?.asLocationPoint()
+        val previous = previousFix
+        previousFix = fix
+
         if (lastMarker == null) {
             routeRepository.addMarker(fix)
-            previousFix = fix
+            return 1
+        }
+        if (previous == null) {
+            if (fix.distanceTo(lastMarker) < MARKER_DISTANCE_METERS) return 0
+            routeRepository.addMarker(fix)
             return 1
         }
 
-        var anchor = lastMarker.asLocationPoint()
-        var segmentStart = previousFix
-            ?.takeIf { it.distanceTo(anchor) < MARKER_DISTANCE_METERS }
-            ?: anchor
-
+        var anchor: LocationPoint = lastMarker
+        var segmentStart: LocationPoint = previous
         var added = 0
         while (fix.distanceTo(anchor) >= MARKER_DISTANCE_METERS) {
             val marker = pointAtDistanceFrom(anchor, segmentStart, fix, MARKER_DISTANCE_METERS)
@@ -45,7 +49,6 @@ class RecordLocationUseCase @Inject constructor(
             segmentStart = marker
             added++
         }
-        previousFix = fix
         return added
     }
 

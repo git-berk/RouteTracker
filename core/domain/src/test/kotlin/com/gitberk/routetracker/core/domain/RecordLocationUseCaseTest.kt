@@ -93,6 +93,23 @@ class RecordLocationUseCaseTest {
         assertMarkersNorth(500.0)
     }
 
+    @Test
+    fun newSessionFarFromLastMarker_addsOneMarkerAtFix_withoutFillingGap() = runTest {
+        RecordLocationUseCase(repository)(fix(north = 0.0))
+
+        assertEquals(1, recordLocation(fix(north = 3_000.0)))
+        assertMarkersNorth(0.0, 3_000.0)
+    }
+
+    @Test
+    fun newSessionNearLastMarker_continuesSpacingFromLastMarker() = runTest {
+        RecordLocationUseCase(repository)(fix(north = 0.0))
+
+        assertEquals(0, recordLocation(fix(north = 40.0)))
+        assertEquals(1, recordLocation(fix(north = 130.0)))
+        assertMarkersNorth(0.0, 100.0)
+    }
+
     private fun fix(
         north: Double,
         east: Double = 0.0,
