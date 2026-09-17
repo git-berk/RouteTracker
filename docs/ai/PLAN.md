@@ -11,7 +11,7 @@ Where the implementation ended up differing, a note says so.
 | minSdk / targetSdk | 26 / 36 |
 | Stack | Kotlin, Jetpack Compose (Material 3), Hilt, Room, DataStore, Play Services Location, Maps Compose, Coroutines/Flow |
 | Build | Version catalog + `build-logic` convention plugins |
-| Maps key | `MAPS_API_KEY` from `local.properties` or the environment, injected as a manifest placeholder |
+| Maps key | `MAPS_API_KEY` in `gradle.properties`, injected as a manifest placeholder |
 
 ## Modules
 

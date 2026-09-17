@@ -24,8 +24,7 @@ to Maps SDK for Android, the `com.gitberk.routetracker` package and the SHA-1 of
 committed in `keystore/`. That's why debug builds sign with that keystore instead of your own. The
 key is for reviewing this project only.
 
-To use your own key, set `MAPS_API_KEY=...` in `local.properties` or as an environment variable.
-Either one overrides the bundled key.
+To use your own key, replace `MAPS_API_KEY` in `gradle.properties`.
 
 Requirements: JDK 17+ (Android Studio's bundled JDK works), Android SDK 36, a device or emulator with
 Google Play services. Min SDK is 26.

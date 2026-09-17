@@ -1,14 +1,7 @@
-import java.util.Properties
-
 plugins {
     id("routetracker.android.application")
     id("routetracker.android.application.compose")
     id("routetracker.hilt")
-}
-
-val localProperties = Properties().apply {
-    val file = rootProject.file("local.properties")
-    if (file.exists()) file.inputStream().use(::load)
 }
 
 android {
@@ -29,9 +22,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        manifestPlaceholders["MAPS_API_KEY"] = localProperties.getProperty("MAPS_API_KEY")
-            ?: System.getenv("MAPS_API_KEY")
-            ?: providers.gradleProperty("MAPS_API_KEY").orNull.orEmpty()
+        manifestPlaceholders["MAPS_API_KEY"] = providers.gradleProperty("MAPS_API_KEY").get()
     }
 }
 
